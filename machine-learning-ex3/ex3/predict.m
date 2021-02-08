@@ -21,11 +21,15 @@ p = zeros(size(X, 1), 1);
 %       can use max(A, [], 2) to obtain the max for each row.
 %
 
+X = [ones(m,1) X];
 
+a_2 = sigmoid(X * Theta1'); % X dimension is (5000 x 400), Input dimension is (m x (n+1)), Theta1 dimension is (25 x (n+1)), a_2 dimension is (m x 25)
+a_2 = [ones(m,1) a_2]; % Adding bias term. Now dimension if a_2 is (m x 26)
 
+a_3 = sigmoid(a_2 * Theta2'); % Dimension if a_2 is (m x 26), Theta2 dimension is (10 x 26), Dimension if a_2 is (m x 10)
 
-
-
+[max_element, index] = max(a_3, [], 2);
+p = index;
 
 
 

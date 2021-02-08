@@ -30,7 +30,9 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
-
+predictions = X * all_theta'; % predictions is (m x num_labels) matrix
+[max_element, index] = max(predictions,[],2);
+p = index;
 
 
 
