@@ -62,27 +62,56 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+X = [ones(m,1) X];
+
+a_2 = sigmoid(X * Theta1'); % Dimension of X is (5000 x 401), dimension of Thetha1' is (401 x 25), dimension of a_2 is (5000 x 25)
+a_2 = [ones(m,1) a_2]; % Dimension of a_2 is (5000 x 26)
+
+a_3 = sigmoid(a_2 * Theta2'); % Dimension of a_2 is (5000 x 26), dimension of Thetha2' is (26  x 10), dimension of a_3 is (5000 x 10)
 
 
+y_hot = bsxfun(@eq, 1:num_labels, y);
 
+% Dimension of y_hot is (5000 x 10), dimension of a_3 is (5000 x 10)
 
+J = -sum(sum(( (y_hot .* log(a_3)) + ((1 - y_hot) .* log(1 - a_3)) ), 2))/m;
 
+regularizationCost = lambda * ( sum(sum(Theta1(:,2:end) .^ 2)) + sum(sum(Theta2(:,2:end) .^ 2)) )/(2 * m);
 
-
-
-
-
-
-
-
-
-
-
+J = J + regularizationCost;
 
 
 % -------------------------------------------------------------
 
 % =========================================================================
+
+
+for i=1:m
+	% Bias term is added to X already, y_hot is calculated already
+
+    % Forward propagation
+    z_2 = Theta1 * X(i,:)'; % Dimension of Theta1 is (25 x 11), dimension of X(1,:) is (1 x 11), dimension of z_2 is (25 x 1)
+	a_2 = sigmoid(z_2); % Dimension of a_2 is (25 x 1)
+	a_2 = [1; a_2]; % Dimension of a_2 is (26 x 1)
+
+	z_3 = Theta2 * a_2; % Dimension of Theta2 is (10 x 26), dimension of a_2 is (26 x 1), dimension of z_3 is (10 x 1)
+	a_3 = sigmoid(z_3); % Dimension of a_3 is (10 x 1)
+
+	delta3 = a_3 - y_hot(i,:)'; % Dimension of a_3 is (10 x 1), dimension of y_hot(i,:)' is (10 x 1), dimension of delta3 is (10 x 1)
+	delta2 = Theta2(:,2:end)' * delta3 .* sigmoidGradient(z_2); % Dimension of Theta2(:,2:end) is (10 x 25), dimension of delta3 is (10 x 1), dimension of delta2 is (25 x 1)
+
+    Theta1_grad = Theta1_grad + delta2 * X(i,:); % Dimension of delta2 is (25 x 1), dimension of X(1,:) is (1 x 11), dimension of Theta1_grad is (25 x 11)
+    Theta2_grad = Theta2_grad + delta3 * a_2'; % Dimension of delta3 is (10 x 1), dimension of a_2 is (26 x 1), dimension of Theta2_grad is (10 x 26)
+
+end
+
+Theta1_grad = Theta1_grad./m;
+Theta2_grad = Theta2_grad./m;	
+
+% Regularization
+Theta1_grad(:,2:end) =  Theta1_grad(:,2:end) + (lambda * Theta1(:,2:end))/m;
+Theta2_grad(:,2:end) =  Theta2_grad(:,2:end) + (lambda * Theta2(:,2:end))/m;
+
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
