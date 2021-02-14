@@ -41,18 +41,11 @@ Theta_grad = zeros(size(Theta));
 %
 
 
+J = (sum(sum(( (X * Theta' - Y) .* R) .^ 2)) + (lambda * (sum(sum(Theta .^ 2)) + sum(sum(X .^ 2)))) )/2; % Dimension of X is (nm x n), dimension of Theta is (nu x n), dimension of Y is (nm x nu)
 
+X_grad = ( (X * Theta' - Y) .* R) * Theta + lambda * X; % Dimension of Theta is (nu x n), dimension of Y is (nm x nu), dimension of X_grad is (nm x n)
 
-
-
-
-
-
-
-
-
-
-
+Theta_grad = ( (X * Theta' - Y) .* R)' * X + lambda * Theta; % Dimension of X is (nm x n), dimension of Y is (nm x nu), dimension of Theta_grad is (nu x n)
 
 
 % =============================================================
